@@ -9,5 +9,15 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<TodoItem> TodoItems { get; set;}
+    public DbSet<TodoItem> TodoItems { get; set; }
+    public DbSet<Category> Categories { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TodoItem>()
+            .HasOne(t => t.Category)
+            .WithMany(c => c.TodoItems)
+            .HasForeignKey(t => t.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 }

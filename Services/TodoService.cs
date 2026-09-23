@@ -21,7 +21,8 @@ public class TodoService : ITodoService
                 {
                     Id = t.Id,
                     Title = t.Title,
-                    IsComplete = t.IsComplete
+                    IsComplete = t.IsComplete,
+                    IsActive = t.IsActive
                 })
             .ToListAsync();
     }
@@ -35,7 +36,8 @@ public class TodoService : ITodoService
         {
             Id = item.Id,
             Title = item.Title,
-            IsComplete = item.IsComplete
+            IsComplete = item.IsComplete,
+            IsActive = item.IsActive
         };
     }
 
@@ -44,7 +46,8 @@ public class TodoService : ITodoService
         var entity = new TodoItem
         {
             Title = dto.Title,
-            IsComplete = dto.IsComplete
+            IsComplete = dto.IsComplete,
+            CategoryId = dto.CategoryId
         };
         _context.TodoItems.Add(entity);
         await _context.SaveChangesAsync();
@@ -53,7 +56,8 @@ public class TodoService : ITodoService
         {
             Id = entity.Id,
             Title = entity.Title,
-            IsComplete = entity.IsComplete
+            IsComplete = entity.IsComplete,
+            IsActive = entity.IsActive
         };
     }
 
