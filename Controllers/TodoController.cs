@@ -1,12 +1,14 @@
+using FirstAPI.Dto;
 using FirstAPI.Dtos;
-using FirstAPI.Models;
 using FirstAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TodoController : ControllerBase
 {
     private readonly ITodoService _todoService;
@@ -17,17 +19,20 @@ public class TodoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TodoItemDto>>> getAll()
+    public async Task<ActionResult<ApiResponse<List<TodoItemDto>>>> GetAll()
     {
-        return Ok(await _todoService.GetAllAsync());
+        var items = await _todoService.GetAllAsync();
+        return Ok(ApiResponse<List<TodoItemDto>>.SuccessResponse(items));
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TodoItem>> GetById(int id)
+    public async Task<ActionResult<ApiResponse<TodoItemDto>>> GetById(int id)
     {
         var item = await _todoService.GetByIdAsync(id);
-        if(item is null) return NotFound();
-        return Ok(item);
+        if(item is null)
+            return NotFound(ApiResponse<TodoItemDto>.ErrorResponse("Todo not found."));
+            
+        return Ok(ApiResponse<TodoItemDto>.SuccessResponse(item));
     }
 
     [HttpPost]
@@ -51,6 +56,12 @@ public class TodoController : ControllerBase
         var success = await _todoService.DeleteAsync(id);
         if(!success) return NotFound();
         return NoContent();
+    }
+
+    [HttpGet("boom")]
+    public IActionResult Boom()
+    {
+        throw new Exception("Test Exception");
     }
 }
 
