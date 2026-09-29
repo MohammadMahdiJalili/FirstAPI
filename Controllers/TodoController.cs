@@ -19,10 +19,10 @@ public class TodoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<List<TodoItemDto>>>> GetAll()
+    public async Task<ActionResult<ApiResponse<PagedResult<TodoItemDto>>>> GetAll([FromQuery] TodoQueryParams queryParams)
     {
-        var items = await _todoService.GetAllAsync();
-        return Ok(ApiResponse<List<TodoItemDto>>.SuccessResponse(items));
+        var items = await _todoService.GetAllAsync(queryParams);
+        return Ok(ApiResponse<PagedResult<TodoItemDto>>.SuccessResponse(items));
     }
 
     [HttpGet("{id}")]
@@ -56,12 +56,6 @@ public class TodoController : ControllerBase
         var success = await _todoService.DeleteAsync(id);
         if(!success) return NotFound();
         return NoContent();
-    }
-
-    [HttpGet("boom")]
-    public IActionResult Boom()
-    {
-        throw new Exception("Test Exception");
     }
 }
 

@@ -14,17 +14,36 @@ public class TodoService : ITodoService
         _context = context;
     }
 
-    public async Task<List<TodoItemDto>> GetAllAsync()
+    public async Task<PagedResult<TodoItemDto>> GetAllAsync(TodoQueryParams queryParams)
     {
-        return await _context.TodoItems
+        var query = _context.TodoItems.AsQueryable();
+
+        if(queryParams.IsComplete.HasValue)
+        {
+            query = query.Where(t => t.IsComplete == queryParams.IsComplete.Value);
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((queryParams.Page - 1) * queryParams.PageSize)
+            .Take(queryParams.PageSize)
             .Select(t => new TodoItemDto
-                {
-                    Id = t.Id,
-                    Title = t.Title,
-                    IsComplete = t.IsComplete,
-                    IsActive = t.IsActive
-                })
+            {
+                Id = t.Id,
+                Title = t.Title,
+                IsComplete = t.IsComplete,
+                IsActive = t.IsActive
+            })
             .ToListAsync();
+
+            return new PagedResult<TodoItemDto>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = queryParams.Page,
+                PageSize = queryParams.PageSize
+            };
     }
 
     public async Task<TodoItemDto?> GetByIdAsync(int id)

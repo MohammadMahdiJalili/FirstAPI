@@ -4,7 +4,7 @@ namespace FirstAPI.Services;
 
 public interface ITodoService
 {
-    Task<List<TodoItemDto>> GetAllAsync();
+    Task<PagedResult<TodoItemDto>> GetAllAsync(TodoQueryParams queryParams);
     Task<TodoItemDto?> GetByIdAsync(int id);
     Task<TodoItemDto> CreateAsync(CreateTodoItemDto dto);
     Task<bool> UpdateAsync(int id, CreateTodoItemDto dto);
